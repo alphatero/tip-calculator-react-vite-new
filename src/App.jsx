@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { Icon, Radio, RadioGroup, Card, TextField, DataField } from './components';
+import React, { useState } from "react";
+import {
+  Icon,
+  Radio,
+  RadioGroup,
+  Card,
+  TextField,
+  DataField,
+} from "./components";
 
 function App() {
   const [{ bill, people, tipAmount, total }, setForm] = useState({
@@ -10,31 +17,24 @@ function App() {
   });
 
   function onChange(target) {
-    console.log(target);
-
     const form = Object.fromEntries(new FormData(target).entries());
 
     const data = {
       bill: Number(form.bill),
-      tips: form.tips === 'custom' ? form.tips : Number(form.tips),
+      tips: form.tips === "custom" ? form.tips : Number(form.tips),
       person: Number(form.people),
       custom: Number(form.custom),
     };
 
-
-    if (!data.person) {
-      const error = true;
-    }
-    if (!data.person) return;
-
     const bill = data.bill;
     const people = data.person;
 
-    const tips = data.tips === 'custom' ? data.custom : data.tips;
+    const tips = data.tips === "custom" ? data.custom : data.tips;
 
     const tip = data.bill * (tips / 100);
-    const tipAmount = tip / data.person;
-    const total = (data.bill + tip) / data.person;
+
+    const tipAmount = people > 0 ? tip / people : 0;
+    const total = people > 0 ? (bill + tip) / people : 0;
 
     setForm({
       bill,
@@ -42,13 +42,6 @@ function App() {
       tipAmount,
       total,
     });
-
-    console.log(tip);
-    console.log(tipAmount);
-    console.log(total);
-    console.log(data);
-    console.log(people);
-    console.log(bill);
   }
 
   return (
@@ -63,11 +56,20 @@ function App() {
           <form
             className="flex flex-col md:grid md:grid-cols-2 gap-8 flex-1"
             onChangeCapture={(event) => onChange(event.currentTarget)}
-            onResetCapture={(event) => requestAnimationFrame(() => onChange(event.target))}
+            onResetCapture={(event) =>
+              requestAnimationFrame(() => onChange(event.target))
+            }
           >
             <div className="flex flex-col gap-6 w-full">
               {/* Bill */}
-              <TextField id="bill" label="Bill" icon={<Icon.Dollar />} value="0" min="0" />
+              <TextField
+                id="bill"
+                label="Bill"
+                icon={<Icon.Dollar />}
+                value="0"
+                min="0"
+                error={bill <= 0}
+              />
 
               {/* Select Tips Button */}
               <RadioGroup id="tips" label="Select Tip %">
@@ -86,14 +88,18 @@ function App() {
                 icon={<Icon.Person />}
                 value="0"
                 min="0"
-                error={bill > 0 && people <= 0}
+                error={people <= 0}
               />
             </div>
 
             {/* Present */}
             <Card className="bg-cyan p-8 rounded-xl flex-col justify-between space-y-6 flex-1">
               <div className="space-y-4">
-                <DataField title="Tip Amount" note="/ person" value={`$${tipAmount}`} />
+                <DataField
+                  title="Tip Amount"
+                  note="/ person"
+                  value={`$${tipAmount}`}
+                />
                 <DataField title="Total" note="/ person" value={`$${total}`} />
               </div>
 
