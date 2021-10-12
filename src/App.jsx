@@ -20,17 +20,22 @@ function App() {
       person: Number(form.people),
       custom: Number(form.custom),
     };
-    console.log(people)
-    console.log(bill)
 
+
+    if (!data.person) {
+      const error = true;
+    }
     if (!data.person) return;
+
+    const bill = data.bill;
+    const people = data.person;
 
     const tips = data.tips === 'custom' ? data.custom : data.tips;
 
     const tip = data.bill * (tips / 100);
     const tipAmount = tip / data.person;
     const total = (data.bill + tip) / data.person;
-    
+
     setForm({
       bill,
       people,
@@ -42,6 +47,8 @@ function App() {
     console.log(tipAmount);
     console.log(total);
     console.log(data);
+    console.log(people);
+    console.log(bill);
   }
 
   return (
